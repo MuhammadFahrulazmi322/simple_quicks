@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {
   FaCheckCircle,
@@ -56,58 +57,82 @@ const TaskList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTaskForSticker, setSelectedTaskForSticker] = useState(null);
 
+  // useEffect(() => {
+  //   // Simulasi loading, misalnya dari API
+  //   setTimeout(() => {
+  //     setTasks([
+  //       {
+  //         id: 1,
+  //         title: "Close off Case #012920- RODRIGUES, Amiguel",
+  //         daysLeft: 2,
+  //         dueDate: "2021-06-12",
+  //         description:
+  //           "Closing off this case since this application has been cancelled. No one really understands how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for success!",
+  //         stickers: ["Important ASAP", "Offline Meeting"],
+  //       },
+  //       {
+  //         id: 2,
+  //         title:
+  //           "Set up documentation report for several Cases: Case 145443, Case 192829 and Case 182203",
+  //         daysLeft: 4,
+  //         dueDate: "2021-06-14",
+  //         description:
+  //           "All cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well.",
+  //         stickers: ["Client Related"],
+  //       },
+  //       {
+  //         id: 3,
+  //         title: "Set up appointment with Dr Blake",
+  //         daysLeft: 10,
+  //         dueDate: "2021-06-22",
+  //         description: "No Description yet",
+  //         stickers: [],
+  //       },
+  //       {
+  //         id: 4,
+  //         title: "Contact Mr Caleb - video conference?",
+  //         daysLeft: 0,
+  //         dueDate: "2021-06-03",
+  //         description: "",
+  //         completed: true,
+  //         stickers: [],
+  //       },
+  //       {
+  //         id: 5,
+  //         title: "Assign 3 homework to Client A",
+  //         daysLeft: 0,
+  //         dueDate: "2021-06-02",
+  //         description: "",
+  //         completed: true,
+  //         stickers: [],
+  //       },
+  //     ]);
+  //     setIsLoading(false); // Set isLoading ke false setelah task dimuat
+  //   }, 2000); // Simulasi 2 detik loading
+  // }, []);
+
   useEffect(() => {
-    // Simulasi loading, misalnya dari API
-    setTimeout(() => {
-      setTasks([
-        {
-          id: 1,
-          title: "Close off Case #012920- RODRIGUES, Amiguel",
-          daysLeft: 2,
-          dueDate: "2021-06-12",
-          description:
-            "Closing off this case since this application has been cancelled. No one really understands how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for success!",
-          stickers: ["Important ASAP", "Offline Meeting"],
-        },
-        {
-          id: 2,
-          title:
-            "Set up documentation report for several Cases: Case 145443, Case 192829 and Case 182203",
-          daysLeft: 4,
-          dueDate: "2021-06-14",
-          description:
-            "All cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well.",
-          stickers: ["Client Related"],
-        },
-        {
-          id: 3,
-          title: "Set up appointment with Dr Blake",
-          daysLeft: 10,
-          dueDate: "2021-06-22",
-          description: "No Description yet",
-          stickers: [],
-        },
-        {
-          id: 4,
-          title: "Contact Mr Caleb - video conference?",
-          daysLeft: 0,
-          dueDate: "2021-06-03",
-          description: "",
-          completed: true,
-          stickers: [],
-        },
-        {
-          id: 5,
-          title: "Assign 3 homework to Client A",
-          daysLeft: 0,
-          dueDate: "2021-06-02",
-          description: "",
-          completed: true,
-          stickers: [],
-        },
-      ]);
-      setIsLoading(false); // Set isLoading ke false setelah task dimuat
-    }, 2000); // Simulasi 2 detik loading
+    // Mengambil data dari API jsonplaceholder
+    axios
+      .get("https://jsonplaceholder.typicode.com/todos")
+      .then((response) => {
+        // Mengonversi data dari API menjadi format yang sesuai
+        const tasksFromAPI = response.data.slice(0, 5).map((task) => ({
+          id: task.id,
+          title: task.title,
+          daysLeft: Math.floor(Math.random() * 10), // Random days left
+          dueDate: "2021-06-12", // Dummy date
+          description: task.title, // Menggunakan title sebagai deskripsi
+          stickers: [], // Kosongkan sticker untuk sekarang
+          completed: task.completed, // Status completed dari API
+        }));
+        setTasks(tasksFromAPI);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks:", error);
+        setIsLoading(false);
+      });
   }, []);
 
   const toggleExpand = (taskId) => {
