@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
 import FloatingActionButton from '../components/FloatingActionButton';
-import ChatWindow from '../components/ChatWindow';
 
 export default function Home() {
   const [selectedMessage, setSelectedMessage] = useState(null);

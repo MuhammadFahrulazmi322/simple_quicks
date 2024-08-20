@@ -6,6 +6,8 @@ const ChatDetail = ({ chat, onBack }) => {
   const [showNewMessageButton, setShowNewMessageButton] = useState(false);
   const [hasScrolledUp, setHasScrolledUp] = useState(false);
   const [showOptions, setShowOptions] = useState(null); // Track which message's options are visible
+  const [replyMessage, setReplyMessage] = useState(null); // Track the message being replied to
+  const [newMessage, setNewMessage] = useState(""); // New message input
 
   useEffect(() => {
     // Scroll to the bottom of the chat when component mounts
@@ -38,6 +40,16 @@ const ChatDetail = ({ chat, onBack }) => {
     setShowOptions(showOptions === index ? null : index);
   };
 
+  const handleReply = (index) => {
+    setReplyMessage(chat.messages[index]);
+    setShowOptions(null);
+  };
+
+  const handleShare = (index) => {
+    alert(`Share message ${index + 1}`);
+    setShowOptions(null);
+  };
+
   const handleEdit = (index) => {
     alert(`Edit message ${index + 1}`);
     setShowOptions(null);
@@ -46,6 +58,28 @@ const ChatDetail = ({ chat, onBack }) => {
   const handleDelete = (index) => {
     alert(`Delete message ${index + 1}`);
     setShowOptions(null);
+  };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      const newChatMessage = {
+        sender: 'You',
+        content: newMessage,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toISOString().split('T')[0],
+        isNew: false,
+        replyFor: replyMessage ? replyMessage.content : null,
+      };
+
+      // Update chat messages (in a real application, you'd send this to the server)
+      chat.messages.push(newChatMessage);
+
+      setNewMessage("");
+      setReplyMessage(null);
+      if (bottomRef.current) {
+        bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   };
 
   return (
@@ -102,6 +136,13 @@ const ChatDetail = ({ chat, onBack }) => {
                   <div className={`text-sm font-semibold mb-1 ${message.sender === 'You' ? 'text-purple-500 text-right' : isLastMessage && message.isNew ? ' text-green-900':'text-orange-500 text-left'}`}>
                     {message.sender}
                   </div>
+
+                  {/* Jika ada replyFor, tampilkan pesan yang di-reply */}
+                  {message.replyFor && (
+                    <div className="border-l-4 border-gray-400 pl-2 mb-2 text-sm text-gray-600">
+                      {message.replyFor}
+                    </div>
+                  )}
                   
                   <div className={`flex flex-row gap-2 ${message.sender === 'You' ? 'flex-row-reverse' : ''}`}>
                     {/* Isi Pesan */}
@@ -125,18 +166,44 @@ const ChatDetail = ({ chat, onBack }) => {
                   {/* Options menu */}
                   {showOptions === index && (
                     <div className={`absolute ${message.sender === 'You' ? 'left-0 ' : 'right-0'} top-12 w-24 bg-white border border-gray-300 rounded shadow-lg z-10`}>
-                      <button 
-                        onClick={() => handleEdit(index)} 
-                        className="block px-4 py-2 text-left text-blue-500 hover:bg-gray-100 border-b-[1px] w-full border-gray-300"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(index)} 
-                        className="block px-4 py-2 text-left text-red-700 hover:bg-gray-100"
-                      >
-                        Delete
-                      </button>
+                      {message.sender === 'You' ? (
+                        <>
+                          <button 
+                            onClick={() => handleReply(index)} 
+                            className="block px-4 py-2 text-left text-blue-500 hover:bg-gray-100 border-b-[1px] w-full border-gray-300"
+                          >
+                            Reply
+                          </button>
+                          <button 
+                            onClick={() => handleEdit(index)} 
+                            className="block px-4 py-2 text-left text-blue-500 hover:bg-gray-100 border-b-[1px] w-full border-gray-300"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(index)} 
+                            className="block px-4 py-2 text-left text-red-700 hover:bg-gray-100"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                        <button 
+                            onClick={() => handleShare(index)} 
+                            className="block px-4 py-2 text-left text-blue-500 hover:bg-gray-100"
+                          >
+                            Share
+                          </button>
+                          <button 
+                            onClick={() => handleReply(index)} 
+                            className="block px-4 py-2 text-left text-blue-500 hover:bg-gray-100 border-b-[1px] w-full border-gray-300"
+                          >
+                            Reply
+                          </button>
+                          
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -147,6 +214,21 @@ const ChatDetail = ({ chat, onBack }) => {
         {/* Elemen untuk memastikan scroll ke bagian bawah */}
         <div ref={bottomRef} />
       </div>
+
+      {/* Display Reply Message */}
+      {replyMessage && (
+        <div className="p-4 bg-gray-100 border-t border-b border-gray-300">
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="text-sm font-semibold">{`Replying to ${replyMessage.sender}`}</div>
+              <div className="text-sm">{replyMessage.content}</div>
+            </div>
+            <button onClick={() => setReplyMessage(null)} className="text-gray-500">
+              <FaTimes size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Waiting for response indicator */}
       {chat.type === 'personal' && (
@@ -172,10 +254,17 @@ const ChatDetail = ({ chat, onBack }) => {
       <div className="p-4 bg-gray-200 flex items-center">
         <input 
           type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
           className="flex-1 p-2 rounded-md border border-gray-300"
           placeholder="Type a new message"
         />
-        <button className="ml-4 p-2 bg-blue-500 text-white rounded-md">Send</button>
+        <button 
+          onClick={handleSendMessage} 
+          className="ml-4 p-2 bg-blue-500 text-white rounded-md"
+        >
+          Send
+        </button>
       </div>
     </div>
   );

@@ -40,6 +40,14 @@ const InboxList = ({ onSelectMessage, isLoading }) => {
           time: '08:00',
           date: '2021-01-01',
           isNew: true,
+        },
+        {
+          sender: 'You',
+          content: 'Hi Mary',
+          time: '19:32',
+          date: '2021-01-01',
+          isNew: false,
+          replyFor: 'Hello Obaidullah, I will be your case advisor for case #029290. I have assigned some homework for you to fill. Please keep up with the due dates. Should you have any questions, you can message me anytime. Thanks.', // Reply for message
         }
       ]
     },
@@ -168,9 +176,10 @@ const InboxList = ({ onSelectMessage, isLoading }) => {
     }
   ];
   
+  
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg h-full flex flex-col">
+    <div className="p-4 bg-white rounded-lg shadow-lg h-full flex flex-col ">
       <div className="flex items-center mb-4">
         <input 
           type="text"

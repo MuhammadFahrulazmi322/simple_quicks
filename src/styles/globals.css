@@ -2,6 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+.custom-checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border: 2px solid #cbd5e0;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  margin-right: 12px; /* Tambahkan margin agar ada jarak dari teks */
+  flex-shrink: 0; /* Menjaga ukuran checkbox tetap */
+}
+
+.custom-checkbox:checked {
+  background-color: #ffffff;
+  border-color: #828282;;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #828282; /* Warna centang (putih) */
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox:hover {
+  border-color: #828282;;
+}
+
+.custom-checkbox:checked:hover {
+  background-color: #ffffff;
+}
+
 /* Loader Animation */
 .loader {
   border: 4px solid #f3f3f3; /* Light grey */
@@ -16,4 +57,5 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 
