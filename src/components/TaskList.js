@@ -1,10 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { FaCheckCircle, FaEllipsisH, FaCalendarAlt, FaPen, FaChevronUp, FaChevronDown } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import {
+  FaCheckCircle,
+  FaEllipsisH,
+  FaCalendarAlt,
+  FaPen,
+  FaChevronUp,
+  FaChevronDown,
+  FaCopy,
+} from "react-icons/fa";
 
 const availableStickers = [
-  'Important ASAP', 'Offline Meeting', 'Virtual Meeting',
-  'ASAP', 'Client Related', 'Self Task',
-  'Appointments', 'Court Related'
+  {
+    label: "Important ASAP",
+    color: "bg-blue-100 text-blue-700 border border-blue-300",
+  },
+  {
+    label: "Offline Meeting",
+    color: "bg-orange-100 text-orange-700 border border-orange-300",
+  },
+  {
+    label: "Virtual Meeting",
+    color: "bg-yellow-100 text-yellow-700 border border-yellow-300",
+  },
+  {
+    label: "ASAP",
+    color: "bg-green-100 text-green-700 border border-green-300",
+  },
+  {
+    label: "Client Related",
+    color: "bg-green-100 text-green-700 border border-green-300",
+  },
+  {
+    label: "Self Task",
+    color: "bg-purple-100 text-purple-700 border border-purple-300",
+  },
+  {
+    label: "Appointments",
+    color: "bg-pink-100 text-pink-700 border border-pink-300",
+  },
+  {
+    label: "Court Related",
+    color: "bg-blue-100 text-blue-700 border border-blue-300",
+  },
 ];
 
 const TaskList = () => {
@@ -16,7 +53,7 @@ const TaskList = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("My Tasks");
   const [editableTaskId, setEditableTaskId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // State untuk loading
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTaskForSticker, setSelectedTaskForSticker] = useState(null);
 
   useEffect(() => {
@@ -25,43 +62,46 @@ const TaskList = () => {
       setTasks([
         {
           id: 1,
-          title: 'Close off Case #012920- RODRIGUES, Amiguel',
+          title: "Close off Case #012920- RODRIGUES, Amiguel",
           daysLeft: 2,
-          dueDate: '2021-06-12',
-          description: 'Closing off this case since this application has been cancelled. No one really understands how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for success!',
-          stickers: ['Important ASAP', 'Offline Meeting'],
+          dueDate: "2021-06-12",
+          description:
+            "Closing off this case since this application has been cancelled. No one really understands how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for success!",
+          stickers: ["Important ASAP", "Offline Meeting"],
         },
         {
           id: 2,
-          title: 'Set up documentation report for several Cases: Case 145443, Case 192829 and Case 182203',
+          title:
+            "Set up documentation report for several Cases: Case 145443, Case 192829 and Case 182203",
           daysLeft: 4,
-          dueDate: '2021-06-14',
-          description: 'All cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well.',
-          stickers: ['Client Related'],
+          dueDate: "2021-06-14",
+          description:
+            "All cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well.",
+          stickers: ["Client Related"],
         },
         {
           id: 3,
-          title: 'Set up appointment with Dr Blake',
+          title: "Set up appointment with Dr Blake",
           daysLeft: 10,
-          dueDate: '2021-06-22',
-          description: 'No Description yet',
+          dueDate: "2021-06-22",
+          description: "No Description yet",
           stickers: [],
         },
         {
           id: 4,
-          title: 'Contact Mr Caleb - video conference?',
+          title: "Contact Mr Caleb - video conference?",
           daysLeft: 0,
-          dueDate: '2021-06-03',
-          description: '',
+          dueDate: "2021-06-03",
+          description: "",
           completed: true,
           stickers: [],
         },
         {
           id: 5,
-          title: 'Assign 3 homework to Client A',
+          title: "Assign 3 homework to Client A",
           daysLeft: 0,
-          dueDate: '2021-06-02',
-          description: '',
+          dueDate: "2021-06-02",
+          description: "",
           completed: true,
           stickers: [],
         },
@@ -136,7 +176,9 @@ const TaskList = () => {
   };
 
   const handleStickerClick = (taskId) => {
-    setSelectedTaskForSticker(selectedTaskForSticker === taskId ? null : taskId);
+    setSelectedTaskForSticker(
+      selectedTaskForSticker === taskId ? null : taskId
+    );
   };
 
   const handleSelectSticker = (taskId, sticker) => {
@@ -190,7 +232,10 @@ const TaskList = () => {
             </ul>
           )}
         </div>
-        <button onClick={handleAddNewTask} className="px-4 py-2 bg-blue-500 text-white rounded-md">
+        <button
+          onClick={handleAddNewTask}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+        >
           New Task
         </button>
       </div>
@@ -205,7 +250,9 @@ const TaskList = () => {
           {tasks.map((task) => (
             <li
               key={task.id}
-              className={`p-4 border-b-2 border-gray-300  relative ${task.completed ? 'text-gray-400' : ''}`}
+              className={`p-4 border-b-2 border-gray-300  relative ${
+                task.completed ? "text-gray-400" : ""
+              }`}
             >
               <div className="flex justify-between mb-2">
                 <div className="flex max-w-[60%]">
@@ -215,27 +262,42 @@ const TaskList = () => {
                     checked={task.completed}
                     onChange={() => toggleTaskCompletion(task.id)}
                   />
-                  <span className={`font-semibold ${task.completed ? 'line-through' : ''}`}>
+                  <span
+                    className={`font-semibold ${
+                      task.completed ? "line-through" : ""
+                    }`}
+                  >
                     {task.title}
                   </span>
                 </div>
                 <div className="flex items-center relative">
                   {!task.completed && (
-                    <span className="text-red-500 font-semibold">{task.daysLeft} Days Left</span>
+                    <span className="text-red-500 font-semibold">
+                      {task.daysLeft} Days Left
+                    </span>
                   )}
                   <span className="text-gray-500 ml-2">{task.dueDate}</span>
                   {expandedTasks[task.id] ? (
-                    <FaChevronUp className="ml-2 cursor-pointer" onClick={() => toggleExpand(task.id)} />
+                    <FaChevronUp
+                      className="ml-2 cursor-pointer"
+                      onClick={() => toggleExpand(task.id)}
+                    />
                   ) : (
-                    <FaChevronDown className="ml-2 cursor-pointer" onClick={() => toggleExpand(task.id)} />
+                    <FaChevronDown
+                      className="ml-2 cursor-pointer"
+                      onClick={() => toggleExpand(task.id)}
+                    />
                   )}
-                  <FaEllipsisH className="ml-4 cursor-pointer text-gray-500" onClick={() => toggleMenu(task.id)} />
+                  <FaEllipsisH
+                    className="ml-4 cursor-pointer text-gray-500"
+                    onClick={() => toggleMenu(task.id)}
+                  />
 
                   {/* Dropdown menu for options */}
                   {menuOpenTaskId === task.id && (
                     <div className="absolute right-0 top-[1px] mt-6 bg-white border rounded shadow-lg z-10 w-28">
-                      <button 
-                        onClick={() => handleDelete(task.id)} 
+                      <button
+                        onClick={() => handleDelete(task.id)}
                         className="block px-4 py-2 text-left text-red-600 hover:bg-gray-100"
                       >
                         Delete
@@ -251,46 +313,65 @@ const TaskList = () => {
                     <input
                       type="date"
                       value={task.dueDate}
-                      onChange={(e) => handleDateChange(task.id, e.target.value)}
+                      onChange={(e) =>
+                        handleDateChange(task.id, e.target.value)
+                      }
                       className="border p-1 rounded"
                     />
                   </div>
                   <div className="flex items-start">
                     <FaPen
-                      className={`mr-2 mt-1 flex-shrink-0 ${task.description.length > 0 ? 'text-blue-500' : 'text-gray-500'} cursor-pointer`}
-                      style={{ width: '10px', height: '10px' }}
+                      className={`mr-2 mt-1 flex-shrink-0 ${
+                        task.description.length > 0
+                          ? "text-blue-500"
+                          : "text-gray-500"
+                      } cursor-pointer`}
+                      style={{ width: "10px", height: "10px" }}
                       onClick={() => handleEditDescription(task.id)}
                     />
                     {editableTaskId === task.id ? (
                       <textarea
                         value={task.description}
-                        onChange={(e) => handleDescriptionChange(task.id, e.target.value)}
+                        onChange={(e) =>
+                          handleDescriptionChange(task.id, e.target.value)
+                        }
                         placeholder="No Description"
                         className="w-full border rounded px-2 py-1"
-                        rows={3} // adjust the number of rows as needed
+                        rows={3}
                       />
                     ) : (
-                      <p>{task.description || 'No Description'}</p>
+                      <p>{task.description || "No Description"}</p>
                     )}
                   </div>
                   {/* Stickers Section */}
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {task.stickers.map((sticker) => (
-                      <span key={sticker} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                        {sticker}
-                      </span>
-                    ))}
+                  <div className="flex flex-wrap gap-2 mt-2 bg-gray-100 p-2 rounded-lg">
                     <button
                       onClick={() => handleStickerClick(task.id)}
-                      className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full text-xs"
+                      className="text-gray-500"
                     >
-                      + Add Sticker
+                      <FaCopy />
                     </button>
+                    {task.stickers.map((sticker) => {
+                      const stickerStyle =
+                        availableStickers.find((s) => s.label === sticker)
+                          ?.color || "bg-gray-200 text-gray-700";
+                      return (
+                        <span
+                          key={sticker}
+                          className={`px-2 py-1 rounded-full text-xs ${stickerStyle}`}
+                        >
+                          {sticker}
+                        </span>
+                      );
+                    })}
+
                     {selectedTaskForSticker === task.id && (
                       <StickerDropdown
                         availableStickers={availableStickers}
                         selectedStickers={task.stickers}
-                        onSelectSticker={(sticker) => handleSelectSticker(task.id, sticker)}
+                        onSelectSticker={(sticker) =>
+                          handleSelectSticker(task.id, sticker)
+                        }
                       />
                     )}
                   </div>
@@ -313,13 +394,16 @@ const TaskList = () => {
                 </div>
                 <div className="flex items-center relative">
                   <FaChevronDown className="ml-2 cursor-pointer" />
-                  <FaEllipsisH className="ml-4 cursor-pointer text-gray-500" onClick={toggleNewTaskMenu} />
+                  <FaEllipsisH
+                    className="ml-4 cursor-pointer text-gray-500"
+                    onClick={toggleNewTaskMenu}
+                  />
 
                   {/* Dropdown menu for options */}
                   {newTaskMenuOpen && (
                     <div className="absolute right-0 top-[1px] mt-6 bg-white border rounded shadow-lg z-10 w-28">
-                      <button 
-                        onClick={handleCancelNewTask} 
+                      <button
+                        onClick={handleCancelNewTask}
                         className="block px-4 py-2 text-left text-red-600 hover:bg-gray-100"
                       >
                         Cancel
@@ -331,17 +415,17 @@ const TaskList = () => {
               <div className="pl-6 text-sm text-[11px] text-gray-500">
                 <div className="flex items-center mb-2">
                   <FaCalendarAlt className="mr-2 text-gray-500" />
-                  <input
-                    type="date"
-                    className="border p-1 rounded"
-                  />
+                  <input type="date" className="border p-1 rounded" />
                 </div>
                 <div className="flex items-start">
-                  <FaPen className="mr-2 mt-1 flex-shrink-0 text-gray-500" style={{ width: '10px', height: '10px' }} />
+                  <FaPen
+                    className="mr-2 mt-1 flex-shrink-0 text-gray-500"
+                    style={{ width: "10px", height: "10px" }}
+                  />
                   <textarea
                     placeholder="No Description"
                     className="w-full border rounded px-2 py-1"
-                    rows={3} // adjust the number of rows as needed
+                    rows={3}
                   />
                 </div>
               </div>
@@ -353,18 +437,22 @@ const TaskList = () => {
   );
 };
 
-const StickerDropdown = ({ availableStickers, selectedStickers, onSelectSticker }) => {
+const StickerDropdown = ({
+  availableStickers,
+  selectedStickers,
+  onSelectSticker,
+}) => {
   return (
-    <div className="absolute bg-white border rounded shadow-lg z-10 w-56 mt-2">
+    <div className="absolute left-12 translate-y-6 p-2 w-56 text-[11px] bg-white border rounded-lg shadow-lg z-10 mt-2">
       {availableStickers.map((sticker) => (
         <button
-          key={sticker}
-          className={`block px-4 py-2 text-left hover:bg-gray-100 ${
-            selectedStickers.includes(sticker) ? 'bg-gray-200' : ''
-          }`}
-          onClick={() => onSelectSticker(sticker)}
+          key={sticker.label}
+          className={`block px-4 py-2 my-2 text-left w-full rounded-lg hover:bg-gray-100 ${
+            sticker.color
+          } ${selectedStickers.includes(sticker.label) ? "bg-gray-200" : ""}`}
+          onClick={() => onSelectSticker(sticker.label)}
         >
-          {sticker}
+          {sticker.label}
         </button>
       ))}
     </div>
