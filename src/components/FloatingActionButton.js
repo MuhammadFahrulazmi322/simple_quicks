@@ -93,7 +93,7 @@ const FloatingActionButton = () => {
                     } text-purple-400 rounded-full shadow-lg flex items-center`}
                   >
                     <Image
-                      src={isInboxOpen ? "/inbox-white.svg" : "/inbox.svg"}
+                      src={isInboxOpen ? "/Inbox-white.svg" : "/Inbox.svg"}
                       width={20}
                       height={20}
                     />
@@ -111,7 +111,7 @@ const FloatingActionButton = () => {
                     } text-purple-400 rounded-full shadow-lg flex items-center`}
                   >
                     <Image
-                      src={isInboxOpen ? "/inbox_white.svg" : "/inbox.svg"}
+                      src={isInboxOpen ? "/Inbox-white.svg" : "/Inbox.svg"}
                       width={20}
                       height={20}
                     />
