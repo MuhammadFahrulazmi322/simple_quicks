@@ -146,14 +146,14 @@ const FloatingActionButton = () => {
 
       {/* Task panel */}
       {isTaskOpen && !selectedChat && (
-        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[450px] bg-white rounded-lg shadow-lg z-50">
+        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[512px] bg-white rounded-lg shadow-lg z-50">
           <TaskList />
         </div>
       )}
 
       {/* Inbox panel */}
       {isInboxOpen && !selectedChat && (
-        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[450px] bg-white rounded-lg shadow-lg z-50">
+        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[512px] bg-white rounded-lg shadow-lg z-50">
           <InboxList
             onSelectMessage={handleSelectMessage}
             isLoading={isLoading}
@@ -163,7 +163,7 @@ const FloatingActionButton = () => {
 
       {/* Chat detail panel */}
       {selectedChat && (
-        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[450px] bg-white rounded-lg shadow-lg z-50">
+        <div className="fixed bottom-20 right-4 xl:w-[512px] w-96 h-[512px] bg-white rounded-lg shadow-lg z-50">
           <ChatDetail chat={selectedChat} onBack={handleBack} />
         </div>
       )}

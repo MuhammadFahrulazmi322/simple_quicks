@@ -29,27 +29,43 @@ const InboxList = ({ onSelectMessage }) => {
             (comment) => comment.postId === post.id
           );
 
-          // Filter comments for personal messages to include only one user and "You"
-          const filteredComments =
-            post.id % 2 !== 0 // Only apply this for personal messages
-              ? postComments.filter((_, idx) => idx === 0 || (idx + 1) % 3 === 0)
-              : postComments;
+          let filteredComments;
 
-          // Mark the last message as new if it's among the first two posts
+          if (post.id % 2 === 0) {
+            // Pesan grup bisa lebih dari 2 pengirim
+            filteredComments = postComments;
+          } else {
+            // Pesan personal hanya mengambil 1 komentar dari API dan menambahkan 1 dari "You"
+            filteredComments = postComments.slice(0, 1);
+          }
+
           const messagesWithYou = filteredComments.map((comment, idx) => {
-            const isYou = (idx + 1) % 3 === 0;
             return {
-              sender: isYou ? "You" : comment.email,
-              content: isYou ? "This is a reply from You." : comment.body,
+              sender: comment.email,
+              content: comment.body,
               time: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
               date: new Date().toISOString().split("T")[0],
               isNew: index < 2 && idx === filteredComments.length - 1, // Mark as new only for the first two posts
-              replyFor: isYou ? comment.body : null,
             };
           });
+
+          if (post.id % 2 !== 0) {
+            // Tambahkan pesan dari "You" jika ini adalah pesan personal
+            messagesWithYou.push({
+              sender: "You",
+              content: "This is a reply from You.",
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              date: new Date().toISOString().split("T")[0],
+              isNew: index < 2,
+              replyFor: filteredComments[0]?.body || "Initial message",
+            });
+          }
 
           return {
             id: post.id,
@@ -58,9 +74,8 @@ const InboxList = ({ onSelectMessage }) => {
             sender: user.name,
             message: post.body,
             date: new Date().toISOString(),
-            isUnread: index < 2, // Only the first two items will be unread
-            participants:
-              post.id % 2 === 0 ? 3 + (post.id % 3) : null, // Only group messages have participants
+            isUnread: index < 2,
+            participants: post.id % 2 === 0 ? 3 + (post.id % 3) : null, // Untuk personal, participants tidak ditampilkan
             messages: messagesWithYou,
           };
         });
@@ -160,7 +175,7 @@ const InboxList = ({ onSelectMessage }) => {
                   </div>
                 )}
                 <div className="flex-1">
-                  <div className="flex flex-row space-x-4">
+                  <div className="flex flex-row space-x-4 items-center">
                     <div className="font-semibold text-base text-blue-500">
                       {item.name}
                     </div>

@@ -272,15 +272,15 @@ const TaskList = () => {
           <p className="ml-4">Loading Task List ...</p>
         </div>
       ) : (
-        <ul className="space-y-4">
+        <ul>
           {tasks.map((task) => (
             <li
               key={task.id}
-              className={`p-4 border-b-2 border-gray-300  relative ${
+              className={`py-[22px] border-b-2 border-gray-300  relative ${
                 task.completed ? "text-gray-400" : ""
               }`}
             >
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between items-start mb-2">
                 <div className="flex max-w-[50%]">
                   <input
                     type="checkbox"
@@ -337,7 +337,7 @@ const TaskList = () => {
               </div>
               {expandedTasks[task.id] && (
                 <div className="pl-6 text-sm text-[11px] text-primary-dark">
-                  <div className="flex flex-row items-center mb-2 space-x-4">
+                  <div className="flex px-2 flex-row items-center mb-2 space-x-4">
                     <Image src="/time_date.svg" width={16} height={16} />
 
                     <input
@@ -349,7 +349,7 @@ const TaskList = () => {
                       className="border p-1 rounded"
                     />
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex px-2 items-start">
                     <button
                       onClick={() => handleEditDescription(task.id)}
                       className="mr-4 mt-1 flex-shrink-0"
@@ -368,11 +368,13 @@ const TaskList = () => {
                         rows={3}
                       />
                     ) : (
-                      <p onClick={() => handleEditDescription(task.id)}>{task.description || "No Description"}</p>
+                      <p onClick={() => handleEditDescription(task.id)}>
+                        {task.description || "No Description"}
+                      </p>
                     )}
                   </div>
                   {/* Stickers Section */}
-                  <div className="flex flex-wrap gap-2 mt-2 bg-gray-100 py-2 rounded-lg">
+                  <div className="flex flex-wrap gap-2 px-2 mt-2 bg-gray-100 py-2 rounded-lg">
                     <button
                       onClick={() => handleStickerClick(task.id)}
                       className="text-gray-500"
@@ -410,7 +412,7 @@ const TaskList = () => {
 
           {/* New Task Form */}
           {isAddingNewTask && (
-            <li className="p-4 border rounded-lg relative">
+            <li className="p-4  rounded-lg relative">
               <div className="flex justify-between mb-2">
                 <div className="flex max-w-[60%]">
                   <input type="checkbox" className="mr-2" />
@@ -444,7 +446,7 @@ const TaskList = () => {
               </div>
               <div className="pl-6 text-sm text-[11px] text-gray-500">
                 <div className="flex flex-row space-x-2 items-center mb-2">
-                <Image src="/time_date.svg" width={16} height={16} />
+                  <Image src="/time_date.svg" width={16} height={16} />
                   <input type="date" className="border p-1 rounded" />
                 </div>
                 <div className="flex flex-row space-x-2  items-start">
