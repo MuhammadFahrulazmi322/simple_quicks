@@ -1,9 +1,10 @@
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
-const InboxList = ({ onSelectMessage, isLoading }) => {
+const InboxList = ({ onSelectMessage }) => {
   const [inboxItems, setInboxItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,15 +23,33 @@ const InboxList = ({ onSelectMessage, isLoading }) => {
         const users = await usersResponse.json();
         const comments = await commentsResponse.json();
 
-        console.log("Posts:", posts);
-        console.log("Users:", users);
-        console.log("Comments:", comments);
-
-        const data = posts.slice(0, 6).map((post) => {
+        const data = posts.slice(0, 6).map((post, index) => {
           const user = users.find((u) => u.id === post.userId);
           const postComments = comments.filter(
             (comment) => comment.postId === post.id
           );
+
+          // Filter comments for personal messages to include only one user and "You"
+          const filteredComments =
+            post.id % 2 !== 0 // Only apply this for personal messages
+              ? postComments.filter((_, idx) => idx === 0 || (idx + 1) % 3 === 0)
+              : postComments;
+
+          // Mark the last message as new if it's among the first two posts
+          const messagesWithYou = filteredComments.map((comment, idx) => {
+            const isYou = (idx + 1) % 3 === 0;
+            return {
+              sender: isYou ? "You" : comment.email,
+              content: isYou ? "This is a reply from You." : comment.body,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              date: new Date().toISOString().split("T")[0],
+              isNew: index < 2 && idx === filteredComments.length - 1, // Mark as new only for the first two posts
+              replyFor: isYou ? comment.body : null,
+            };
+          });
 
           return {
             id: post.id,
@@ -39,99 +58,133 @@ const InboxList = ({ onSelectMessage, isLoading }) => {
             sender: user.name,
             message: post.body,
             date: new Date().toISOString(),
-            isUnread: post.id % 2 === 0,
-            participants: post.id % 2 === 0 ? 3 + (post.id % 3) : 2,
-            messages: postComments.map((comment) => ({
-              sender: comment.email,
-              content: comment.body,
-              time: new Date(comment.timestamp).toLocaleTimeString(),
-              date: new Date(comment.timestamp).toISOString().split("T")[0],
-              isNew: false,
-            })),
+            isUnread: index < 2, // Only the first two items will be unread
+            participants:
+              post.id % 2 === 0 ? 3 + (post.id % 3) : null, // Only group messages have participants
+            messages: messagesWithYou,
           };
         });
 
         setInboxItems(data);
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center flex-1">
-        <div className="loader"></div>
-        <p className="text-gray-500 mt-2">Loading Chats...</p>
-      </div>
-    );
-  }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  const truncateContent = (content, maxLength) => {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + "...";
+  };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg h-full flex flex-col ">
-      <div className="flex items-center mb-4">
+    <div className="px-8 py-6 bg-white rounded-lg shadow-lg h-full flex flex-col">
+      <div className="flex flex-row justify-between items-center mb-4 px-4 border border-primary-light rounded-md">
         <input
           type="text"
           placeholder="Search"
-          className="w-full p-2 rounded-md border border-gray-300"
+          className="w-full p-2 rounded-md text-primary-dark focus:outline-none"
         />
+        <div className="flex items-center justify-center px-2">
+          <Image
+            src="/search_black.svg"
+            width={16}
+            height={16}
+            alt="Search Icon"
+          />
+        </div>
       </div>
-      <div className="max-h-full overflow-y-auto flex-1">
-        {inboxItems.map((item) => {
-          const lastMessage = item.messages[item.messages.length - 1];
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center flex-1">
+          <div className="loader"></div>
+          <p className="text-gray-500 mt-2">Loading Chats...</p>
+        </div>
+      ) : (
+        <div className="max-h-full overflow-y-auto flex-1">
+          {inboxItems.map((item) => {
+            const lastMessage = item.messages[item.messages.length - 1];
+            const truncatedMessage = truncateContent(lastMessage.content, 50);
 
-          return (
-            <div
-              key={item.id}
-              className={`flex items-center p-2 mb-2 rounded-lg cursor-pointer hover:bg-gray-100 ${
-                item.isUnread ? "bg-gray-200" : "bg-white"
-              }`}
-              onClick={() => onSelectMessage(item)}
-            >
-              {item.type === "group" ? (
-                <div
-                  className="relative flex items-center mr-3"
-                  style={{ width: "32px", height: "32px" }}
-                >
-                  <FaUserCircle
-                    className="text-gray-400 bg-white rounded-full absolute"
-                    style={{ fontSize: "24px", left: "0", zIndex: 1 }}
-                  />
-                  <FaUserCircle
-                    className="text-blue-500 bg-white rounded-full absolute"
-                    style={{ fontSize: "24px", right: "0", zIndex: 2 }}
-                  />
+            return (
+              <div
+                key={item.id}
+                className={`flex py-[22px] border-b border-b-primary-light items-center space-x-2 mb-2 cursor-pointer`}
+                onClick={() => onSelectMessage(item)}
+              >
+                {item.type === "group" ? (
+                  <div
+                    className="relative flex items-center mr-3"
+                    style={{ width: "32px", height: "32px" }}
+                  >
+                    <div
+                      className="bg-primary-contrast rounded-full absolute p-2 flex items-center justify-center"
+                      style={{ zIndex: 1 }}
+                    >
+                      <Image
+                        src="/user_gray.svg"
+                        width={16}
+                        height={16}
+                        alt="User Icon"
+                      />
+                    </div>
+                    <div
+                      className="bg-primary rounded-full absolute translate-x-3 p-2 flex items-center justify-center"
+                      style={{ zIndex: 2 }}
+                    >
+                      <Image
+                        src="/user.svg"
+                        width={16}
+                        height={16}
+                        alt="User Icon"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center bg-blue-500 text-white text-sm font-bold rounded-full w-8 h-8 mr-3">
+                    {lastMessage.sender.charAt(0)}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex flex-row space-x-4">
+                    <div className="font-semibold text-base text-blue-500">
+                      {item.name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {formatDate(item.date)}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500 flex flex-col">
+                    {item.type === "group" && lastMessage.sender && (
+                      <span className="font-semibold">
+                        {lastMessage.sender} :{" "}
+                      </span>
+                    )}
+                    {truncatedMessage}
+                  </div>
                 </div>
-              ) : (
-                <div className="flex items-center justify-center bg-blue-500 text-white text-xl font-bold rounded-full w-8 h-8 mr-3">
-                  {lastMessage.sender.charAt(0)}
-                </div>
-              )}
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <div className="font-semibold text-blue-500">{item.name}</div>
-                  <div className="text-sm text-gray-500">{item.date}</div>
-                </div>
-                <div className="text-sm text-gray-500">
-                  {lastMessage.sender && (
-                    <span className="font-semibold">
-                      {lastMessage.sender} :{" "}
-                    </span>
-                  )}
-                  {lastMessage.content}
-                </div>
+                {item.isUnread && (
+                  <div className="relative right-2 w-2 h-2 rounded-full bg-red-500 ml-2"></div>
+                )}
               </div>
-              {item.isUnread && (
-                <div className="w-2 h-2 rounded-full bg-red-500 ml-2"></div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

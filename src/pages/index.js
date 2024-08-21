@@ -7,7 +7,7 @@ export default function Home() {
   const [selectedMessage, setSelectedMessage] = useState(null);
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex h-screen bg-gray-900 font-lato">
       {/* Sidebar Kosong */}
       <Sidebar />
 

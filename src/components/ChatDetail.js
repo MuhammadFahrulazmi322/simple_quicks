@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaArrowLeft, FaTimes, FaEllipsisH } from 'react-icons/fa';
 
@@ -14,14 +15,20 @@ const ChatDetail = ({ chat, onBack }) => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [chat]);
+
+    // Check if there's a new message
+    const hasNewMessage = chat.messages.some(message => message.isNew);
+    setShowNewMessageButton(hasNewMessage && hasScrolledUp);
+  }, [chat, hasScrolledUp]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    // If user scrolls up, show the "New Message" button
+    // If user scrolls up, show the "New Message" button if there's a new message
     if (scrollTop + clientHeight < scrollHeight - 50) {
-      setShowNewMessageButton(true);
       setHasScrolledUp(true);
+      if (chat.messages.some(message => message.isNew)) {
+        setShowNewMessageButton(true);
+      }
     } else {
       setShowNewMessageButton(false);
       setHasScrolledUp(false);
@@ -83,20 +90,26 @@ const ChatDetail = ({ chat, onBack }) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full text-base rounded-lg">
       {/* Header */}
-      <div className="p-4 bg-gray-200 border-b border-gray-300 flex justify-between items-center">
+      <div className="p-4 bg-white border-b rounded-t-lg border-primary-contrast flex justify-between items-center">
         <div className="flex items-center">
-          <button onClick={onBack} className="text-blue-500 mr-4">
-            <FaArrowLeft size={20} />
+          <button onClick={onBack} className="mr-4">
+            <Image src="/back.svg" width={14} height={14} />
           </button>
           <div>
             <div className="font-semibold text-blue-500">{chat.name}</div>
-            <div className="text-sm text-gray-500">{chat.participants} Participants</div>
+            {chat.participants >=1 ? (
+              <div className="text-sm text-gray-500">{chat.participants} Participants</div>
+
+            ) : (
+              <div></div>
+            )}
+
           </div>
         </div>
-        <button onClick={() => {}} className="text-gray-500">
-          <FaTimes size={20} />
+        <button onClick={onBack} className="text-gray-500">
+          <Image src="/close.svg" width={14} height={14} />
         </button>
       </div>
       
@@ -110,9 +123,9 @@ const ChatDetail = ({ chat, onBack }) => {
               {index === 0 || chat.messages[index - 1].date !== message.date ? (
                 <div className="flex items-center justify-center my-4">
                   <div className="flex items-center w-full">
-                    <hr className="flex-grow border-t border-black" />
-                    <span className="mx-2 font-semibold">{message.date}</span>
-                    <hr className="flex-grow border-t border-black" />
+                    <hr className="flex-grow border-t border-primary-dark" />
+                    <span className="mx-2 font-semibold text-primary-dark">{message.date}</span>
+                    <hr className="flex-grow border-t border-primary-dark" />
                   </div>
                 </div>
               ) : null}
@@ -121,9 +134,9 @@ const ChatDetail = ({ chat, onBack }) => {
               {message.isNew && (
                 <div className="flex items-center justify-center my-4">
                   <div className="flex items-center w-full">
-                    <hr className="flex-grow border-t border-red-300" />
-                    <span className="mx-2 text-red-500 font-semibold">New Message</span>
-                    <hr className="flex-grow border-t border-red-300" />
+                    <hr className="flex-grow border-t border-indicator-red" />
+                    <span className="mx-2 text-indicator-red font-semibold">New Message</span>
+                    <hr className="flex-grow border-t border-indicator-red" />
                   </div>
                 </div>
               )}
@@ -133,24 +146,31 @@ const ChatDetail = ({ chat, onBack }) => {
               >
                 <div className="max-w-[80%] relative">
                   {/* Nama Pengirim */}
-                  <div className={`text-sm font-semibold mb-1 ${message.sender === 'You' ? 'text-purple-500 text-right' : isLastMessage && message.isNew ? ' text-green-900':'text-orange-500 text-left'}`}>
+                  <div className={`text-sm font-semibold mb-1 ${message.sender === 'You' ? 'text-chats-purple text-right' : isLastMessage && message.isNew ? ' text-chats-green':'text-chats-peach text-left'}`}>
                     {message.sender}
                   </div>
 
                   {/* Jika ada replyFor, tampilkan pesan yang di-reply */}
                   {message.replyFor && (
-                    <div className="border-l-4 border-gray-400 pl-2 mb-2 text-sm text-gray-600">
+                    <div className="border-2 border-primary-contrast rounded-lg pl-2 mb-2 text-sm text-gray-600">
                       {message.replyFor}
                     </div>
                   )}
                   
                   <div className={`flex flex-row gap-2 ${message.sender === 'You' ? 'flex-row-reverse' : ''}`}>
                     {/* Isi Pesan */}
-                    <div className={`p-3 rounded-lg shadow ${message.sender === 'You' ? 'bg-purple-100 text-purple-900' : isLastMessage && message.isNew ? 'bg-green-100 text-green-900' : 'bg-yellow-100 text-yellow-900'}`}>
+                    <div className={`flex flex-col justify-between space-y-4 p-3 rounded-lg shadow text-primary-dark ${message.sender === 'You' ? 'bg-chats-lightpurple ' : isLastMessage && message.isNew ? 'bg-chats-mint ' : 'bg-chats-lightpeach '}`}>
+                      <div>
                       {message.content}
+                      </div>
+                      <div className='text-sm'>
+                      {message.time}
+                      </div>
+
                     </div>
                     {/* Options button */}
                     <div className="flex ">
+                    
                       <FaEllipsisH  
                         className="text-gray-500 cursor-pointer "
                         onClick={() => toggleOptions(index)}
@@ -160,7 +180,6 @@ const ChatDetail = ({ chat, onBack }) => {
                   
                   {/* Waktu Pesan */}
                   <div className={`text-xs text-gray-500 mt-1 ${message.sender === 'You' ? 'text-right' : 'text-left'}`}>
-                    {message.time}
                   </div>
 
                   {/* Options menu */}
@@ -220,8 +239,8 @@ const ChatDetail = ({ chat, onBack }) => {
         <div className="p-4 bg-gray-100 border-t border-b border-gray-300">
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-sm font-semibold">{`Replying to ${replyMessage.sender}`}</div>
-              <div className="text-sm">{replyMessage.content}</div>
+              <div className="text-sm font-semibold text-primary-dark">{`Replying to ${replyMessage.sender}`}</div>
+              <div className="text-sm text-primary-dark">{replyMessage.content}</div>
             </div>
             <button onClick={() => setReplyMessage(null)} className="text-gray-500">
               <FaTimes size={16} />
@@ -229,17 +248,6 @@ const ChatDetail = ({ chat, onBack }) => {
           </div>
         </div>
       )}
-
-      {/* Waiting for response indicator */}
-      {chat.type === 'personal' && (
-        <div className="flex items-center justify-left bg-blue-50 p-3 text-blue-600 text-sm">
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500 mr-3"></div>
-            Please wait while we connect you with one of our team...
-          </div>
-        </div>
-      )}
-
       {/* Tombol New Message */}
       {showNewMessageButton && (
         <button 
@@ -250,8 +258,20 @@ const ChatDetail = ({ chat, onBack }) => {
         </button>
       )}
 
+      {/* Waiting for response indicator */}
+      {chat.type === 'personal' && (
+        <div className="flex items-center justify-left bg-blue-50 p-3 text-primary text-sm">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary mr-3"></div>
+            Please wait while we connect you with one of our team...
+          </div>
+        </div>
+      )}
+
+      
+
       {/* Input New Message */}
-      <div className="p-4 bg-gray-200 flex items-center">
+      <div className="p-4 bg-white flex items-center rounded-b-lg ">
         <input 
           type="text"
           value={newMessage}

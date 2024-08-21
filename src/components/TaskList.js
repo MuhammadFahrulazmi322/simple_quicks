@@ -1,4 +1,5 @@
 import axios from "axios";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import {
   FaCheckCircle,
@@ -13,35 +14,35 @@ import {
 const availableStickers = [
   {
     label: "Important ASAP",
-    color: "bg-blue-100 text-blue-700 border border-blue-300",
+    color: "bg-stickers-lightblue border border-blue-300",
   },
   {
     label: "Offline Meeting",
-    color: "bg-orange-100 text-orange-700 border border-orange-300",
+    color: "bg-stickers-peach border border-orange-300",
   },
   {
     label: "Virtual Meeting",
-    color: "bg-yellow-100 text-yellow-700 border border-yellow-300",
+    color: "bg-stickers-yellow  border border-yellow-300",
   },
   {
     label: "ASAP",
-    color: "bg-green-100 text-green-700 border border-green-300",
+    color: "bg-stickers-mint border border-green-300",
   },
   {
     label: "Client Related",
-    color: "bg-green-100 text-green-700 border border-green-300",
+    color: "bg-stickers-lightgreen  border border-green-300",
   },
   {
     label: "Self Task",
-    color: "bg-purple-100 text-purple-700 border border-purple-300",
+    color: "bg-stickers-purple  border border-purple-300",
   },
   {
     label: "Appointments",
-    color: "bg-pink-100 text-pink-700 border border-pink-300",
+    color: "bg-stickers-pink border border-pink-300",
   },
   {
     label: "Court Related",
-    color: "bg-blue-100 text-blue-700 border border-blue-300",
+    color: "bg-stickers-blue  border border-blue-300",
   },
 ];
 
@@ -223,7 +224,7 @@ const TaskList = () => {
   };
 
   return (
-    <div className="max-h-full text-[11px] overflow-y-auto flex-1 p-4">
+    <div className="px-8 py-6 max-h-full text-[12px] overflow-y-auto flex-1 p-4">
       <div className="flex justify-between items-center mb-4">
         <div className="relative">
           <button
@@ -237,7 +238,7 @@ const TaskList = () => {
             <ul className="absolute mt-1 left-0 right-0 w-56 bg-white border border-gray-300 rounded-md shadow-lg z-10">
               <li
                 hidden
-                className="px-4 py-2 border-b border-gray-300 hover:bg-gray-100 cursor-pointer"
+                className="py-[22px] px-4 border-b border-gray-300 hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleOptionClick("My Tasks")}
               >
                 My Tasks
@@ -259,7 +260,7 @@ const TaskList = () => {
         </div>
         <button
           onClick={handleAddNewTask}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="px-4 py-2 bg-primary text-white rounded-md"
         >
           New Task
         </button>
@@ -280,7 +281,7 @@ const TaskList = () => {
               }`}
             >
               <div className="flex justify-between mb-2">
-                <div className="flex max-w-[60%]">
+                <div className="flex max-w-[50%]">
                   <input
                     type="checkbox"
                     className="mr-2 custom-checkbox"
@@ -297,7 +298,7 @@ const TaskList = () => {
                 </div>
                 <div className="flex items-center relative">
                   {!task.completed && (
-                    <span className="text-red-500 font-semibold">
+                    <span className="text-indicator-red">
                       {task.daysLeft} Days Left
                     </span>
                   )}
@@ -313,17 +314,20 @@ const TaskList = () => {
                       onClick={() => toggleExpand(task.id)}
                     />
                   )}
-                  <FaEllipsisH
+
+                  <button
                     className="ml-4 cursor-pointer text-gray-500"
                     onClick={() => toggleMenu(task.id)}
-                  />
+                  >
+                    <Image src="/elipsisH.svg" width={16} height={16} />
+                  </button>
 
                   {/* Dropdown menu for options */}
                   {menuOpenTaskId === task.id && (
                     <div className="absolute right-0 top-[1px] mt-6 bg-white border rounded shadow-lg z-10 w-28">
                       <button
                         onClick={() => handleDelete(task.id)}
-                        className="block px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                        className="block px-4 py-2 text-left text-indicator-red hover:bg-gray-100"
                       >
                         Delete
                       </button>
@@ -332,9 +336,10 @@ const TaskList = () => {
                 </div>
               </div>
               {expandedTasks[task.id] && (
-                <div className="pl-6 text-sm text-[11px] text-gray-500">
-                  <div className="flex items-center mb-2">
-                    <FaCalendarAlt className="mr-2 text-blue-500" />
+                <div className="pl-6 text-sm text-[11px] text-primary-dark">
+                  <div className="flex flex-row items-center mb-2 space-x-4">
+                    <Image src="/time_date.svg" width={16} height={16} />
+
                     <input
                       type="date"
                       value={task.dueDate}
@@ -345,15 +350,13 @@ const TaskList = () => {
                     />
                   </div>
                   <div className="flex items-start">
-                    <FaPen
-                      className={`mr-2 mt-1 flex-shrink-0 ${
-                        task.description.length > 0
-                          ? "text-blue-500"
-                          : "text-gray-500"
-                      } cursor-pointer`}
-                      style={{ width: "10px", height: "10px" }}
+                    <button
                       onClick={() => handleEditDescription(task.id)}
-                    />
+                      className="mr-4 mt-1 flex-shrink-0"
+                    >
+                      <Image src="/pen.svg" width={14} height={14} />
+                    </button>
+
                     {editableTaskId === task.id ? (
                       <textarea
                         value={task.description}
@@ -365,16 +368,16 @@ const TaskList = () => {
                         rows={3}
                       />
                     ) : (
-                      <p>{task.description || "No Description"}</p>
+                      <p onClick={() => handleEditDescription(task.id)}>{task.description || "No Description"}</p>
                     )}
                   </div>
                   {/* Stickers Section */}
-                  <div className="flex flex-wrap gap-2 mt-2 bg-gray-100 p-2 rounded-lg">
+                  <div className="flex flex-wrap gap-2 mt-2 bg-gray-100 py-2 rounded-lg">
                     <button
                       onClick={() => handleStickerClick(task.id)}
                       className="text-gray-500"
                     >
-                      <FaCopy />
+                      <Image src="/add_sticker.svg" width={16} height={16} />
                     </button>
                     {task.stickers.map((sticker) => {
                       const stickerStyle =
@@ -383,7 +386,7 @@ const TaskList = () => {
                       return (
                         <span
                           key={sticker}
-                          className={`px-2 py-1 rounded-full text-xs ${stickerStyle}`}
+                          className={`px-2 py-1 rounded-lg text-xs ${stickerStyle}`}
                         >
                           {sticker}
                         </span>
@@ -419,17 +422,19 @@ const TaskList = () => {
                 </div>
                 <div className="flex items-center relative">
                   <FaChevronDown className="ml-2 cursor-pointer" />
-                  <FaEllipsisH
-                    className="ml-4 cursor-pointer text-gray-500"
+                  <button
+                    className="ml-4 cursor-pointer "
                     onClick={toggleNewTaskMenu}
-                  />
+                  >
+                    <Image src="/elipsisH.svg" width={16} height={16} />
+                  </button>
 
                   {/* Dropdown menu for options */}
                   {newTaskMenuOpen && (
                     <div className="absolute right-0 top-[1px] mt-6 bg-white border rounded shadow-lg z-10 w-28">
                       <button
                         onClick={handleCancelNewTask}
-                        className="block px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                        className="block px-4 py-2 text-left text-indicator-red hover:bg-gray-100"
                       >
                         Cancel
                       </button>
@@ -438,15 +443,12 @@ const TaskList = () => {
                 </div>
               </div>
               <div className="pl-6 text-sm text-[11px] text-gray-500">
-                <div className="flex items-center mb-2">
-                  <FaCalendarAlt className="mr-2 text-gray-500" />
+                <div className="flex flex-row space-x-2 items-center mb-2">
+                <Image src="/time_date.svg" width={16} height={16} />
                   <input type="date" className="border p-1 rounded" />
                 </div>
-                <div className="flex items-start">
-                  <FaPen
-                    className="mr-2 mt-1 flex-shrink-0 text-gray-500"
-                    style={{ width: "10px", height: "10px" }}
-                  />
+                <div className="flex flex-row space-x-2  items-start">
+                  <Image src="/pen.svg" width={14} height={14} />
                   <textarea
                     placeholder="No Description"
                     className="w-full border rounded px-2 py-1"
